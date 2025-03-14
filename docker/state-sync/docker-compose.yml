@@ -15,6 +15,7 @@ services:
       - lava_data:/lava
     networks:
       - lava_network
+      - internal-network
     
   lava-node-config:
     image: ghcr.io/tomwright/dasel:v2.7.0
@@ -51,6 +52,7 @@ services:
       - lava_data:/lava
     networks:
       - lava_network
+      - internal-network
     depends_on:
       lava-node-init:
           condition: service_completed_successfully
@@ -70,6 +72,7 @@ services:
       - lava_data:/lava
     networks:
       - lava_network
+      - internal-network
     healthcheck:
       test: ["CMD", "lavad", "status"]
       interval: 10s
@@ -87,4 +90,8 @@ volumes:
   lava_data: 
 
 networks:
-  lava_network: 
+  lava_network:
+    name: lava_network
+    driver: bridge
+  internal-network:
+    external: true    # This tells Docker this network already exists
