@@ -1,0 +1,105 @@
+services:
+  lava-node-init:
+    image: ghcr.io/lavanet/lava/lavad:${LAVAD_VERSION:-latest}
+    environment:
+      - CHAIN_ID=${CHAIN_ID:-lava}
+      - KEYRING_BACKEND=${KEYRING_BACKEND:-test}
+      - MONIKER=${MONIKER:-DOCKER_COMPOSE_MONIKER}
+    entrypoint: ["sh"]
+    command: ["/lava/config/new_node_init.sh"]
+    volumes:
+      - lava_data:/lava
+      - ../common/new_node_init.sh:/lava/config/new_node_init.sh
+    networks:
+      - lava_network
+
+  lava-node-config:
+    image: ghcr.io/tomwright/dasel:v2.7.0
+    entrypoint: ["sh", "-c"]
+    # Long config command here (same as original)
+    volumes:
+      - lava_data:/lava
+    networks:
+      - lava_network
+    depends_on:
+      lava-node-init:
+        condition: service_completed_successfully
+
+  lava-node:
+    image: ghcr.io/lavanet/lava/lavad:${LAVAD_VERSION:-latest}
+    container_name: lava-node
+    command: ["start", "--pruning=nothing"]
+    ports:
+      - "${LAVA_NODE_PORT_API:-1317}:1317"
+      - "${LAVA_NODE_PORT_GRPC:-9090}:9090"
+      - "${LAVA_NODE_PORT_GRPC_WEB:-9091}:9091"
+      - "${LAVA_NODE_PORT_P2P:-26656}:26656"
+      - "${LAVA_NODE_PORT_RPC:-26657}:26657"
+    volumes:
+      - lava_data:/lava
+    networks:
+      - lava_network
+    healthcheck:
+      test: ["CMD", "lavad", "status"]
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    restart: always
+    depends_on:
+      lava-node-init:
+        condition: service_completed_successfully
+      lava-node-config:
+        condition: service_completed_successfully
+
+  post-lava-node-init:
+    image: ghcr.io/lavanet/lava/lavad:${LAVAD_VERSION:-latest}
+    entrypoint: ["sh"]
+    command: ["/lava/config/post_node_init.sh"]
+    volumes:
+      - lava_data:/lava
+      - ../common/post_node_init.sh:/lava/config/post_node_init.sh
+      - ../../specs/:/lava/specs/
+      - ../../cookbook/plans/:/lava/cookbook/plans/
+    networks:
+      - lava_network
+    depends_on:
+      lava-node:
+        condition: service_healthy
+
+  provider:
+    image: ghcr.io/lavanet/lava/lavap:${LAVAP_VERSION:-latest}
+    volumes:
+      - ../common/provider.yml:/lava/config/provider.yml:ro
+      - lava_data:/lava
+    command:
+      [
+        "rpcprovider",
+        "provider.yml",
+        "--chain-id",
+        "lava",
+        "--from",
+        "servicer1",
+        "--log_level",
+        "debug",
+        "--geolocation",
+        "2",
+        "--keyring-backend",
+        "test",
+        "--node",
+        "tcp://lava-node:26657",
+      ]
+    # Expose the provider port directly since there's no nginx
+    ports:
+      - "8080:8080"  # Use the same port as nginx was exposing
+    networks:
+      - lava_network
+    depends_on:
+      - lava-node
+    restart: always
+
+volumes:
+  lava_data:
+
+networks:
+  lava_network:
