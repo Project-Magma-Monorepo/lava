@@ -15,7 +15,6 @@ services:
       - lava_data:/lava
     networks:
       - lava_network
-      - internal-network
     
   lava-node-config:
     image: ghcr.io/tomwright/dasel:v2.7.0
@@ -52,7 +51,6 @@ services:
       - lava_data:/lava
     networks:
       - lava_network
-      - internal-network
     depends_on:
       lava-node-init:
           condition: service_completed_successfully
@@ -70,9 +68,9 @@ services:
       - '${LAVA_NODE_PORT_RPC:-26657}:26657'
     volumes:
       - lava_data:/lava
+      #- ../../config.yml:/lava/.lava/config/config.yml  # Mount the config.yml file
     networks:
       - lava_network
-      - internal-network
     healthcheck:
       test: ["CMD", "lavad", "status"]
       interval: 10s
@@ -85,13 +83,40 @@ services:
         condition: service_completed_successfully
       lava-node-config:
         condition: service_completed_successfully
+  
+  provider:
+    image: ghcr.io/lavanet/lava/lavap:${LAVAP_VERSION:-latest}
+    volumes:
+      - ../common/provider.yml:/lava/config/provider.yml:ro
+      - lava_data:/lava
+    command:
+      [
+        "rpcprovider",
+        "provider.yml",
+        "--chain-id",
+        "lava",
+        "--from",
+        "servicer1",
+        "--log_level",
+        "debug",
+        "--geolocation",
+        "2",
+        "--keyring-backend",
+        "test",
+        "--shard-id",
+        "1",
+        "--node",
+        "tcp://lava-node:26657",
+      ]
+    networks:
+      - lava_network
+      
+    depends_on:
+      - lava-node
+    restart: always
 
 volumes:
   lava_data: 
 
 networks:
-  lava_network:
-    name: lava_network
-    driver: bridge
-  internal-network:
-    external: true    # This tells Docker this network already exists
+  lava_network: 

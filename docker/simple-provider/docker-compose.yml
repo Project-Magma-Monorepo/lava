@@ -1,0 +1,42 @@
+
+services:
+  lava-provider:
+    image: ghcr.io/lavanet/lava/lavap:${LAVAP_VERSION:-latest}
+    container_name: lava-provider
+    volumes:
+      - ./config:/lava/config:ro
+      - lava_data:/lava
+    ports:
+      # Expose provider ports (adjust as needed based on your provider.yml)
+      - "${PROVIDER_ETH_PORT:-2220}:2220" # For Ethereum JSON-RPC
+      - "${PROVIDER_SUI_PORT:-2221}:2221" # For SUI JSON-RPC (when enabled)
+    environment:
+      - TZ=UTC
+      - PROVIDER_WALLET=${PROVIDER_WALLET:-servicer1}
+      - GEOLOCATION=${GEOLOCATION:-2}
+      - CHAIN_ID=${CHAIN_ID:-lava-testnet-2}
+      - KEYRING_BACKEND=${KEYRING_BACKEND:-test}
+      - LAVA_RPC_NODE=${LAVA_RPC_NODE:-https://public-rpc.lavanet.xyz:443/rpc/}
+    # Fixed command with proper environment variable expansion
+    command:
+      [
+        "rpcprovider",
+        "/lava/config/provider.yml",
+        "--from", "${PROVIDER_WALLET:-servicer1}",
+        "--geolocation", "${GEOLOCATION:-2}",
+        "--chain-id", "${CHAIN_ID:-lava-testnet-2}",
+        "--keyring-backend", "${KEYRING_BACKEND:-test}",
+        "--node", "${LAVA_RPC_NODE:-https://public-rpc.lavanet.xyz:443/rpc/}",
+        "--log_level", "debug"
+      ]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "lavap", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  lava_data:
+    driver: local

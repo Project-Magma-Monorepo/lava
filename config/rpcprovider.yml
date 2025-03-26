@@ -23,4 +23,4 @@ endpoints:
       network-address:
         address: 127.0.0.1:2221
       node-urls: 
-        url: wss://ethereum-rpc.com/ws/
+        url: https://rpc.ankr.com/eth

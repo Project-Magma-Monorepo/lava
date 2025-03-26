@@ -13,7 +13,7 @@ services:
       - ../common/new_node_init.sh:/lava/config/new_node_init.sh
     networks:
       - lava_network
-      - internal-network
+      
 
   lava-node-config:
     image: ghcr.io/tomwright/dasel:v2.7.0
@@ -56,7 +56,7 @@ services:
       - lava_data:/lava
     networks:
       - lava_network
-      - internal-network
+      
     depends_on:
       lava-node-init:
         condition: service_completed_successfully
@@ -76,7 +76,7 @@ services:
       - lava_data:/lava
     networks:
       - lava_network
-      - internal-network
+      
     healthcheck:
       test: ["CMD", "lavad", "status"]
       interval: 10s
@@ -101,7 +101,7 @@ services:
       - ../../cookbook/plans/:/lava/cookbook/plans/
     networks:
       - lava_network
-      - internal-network
+      
     depends_on:
       lava-node:
         condition: service_healthy
@@ -110,7 +110,7 @@ services:
     image: nginx:latest
     networks:
       - lava_network
-      - internal-network
+      
     ports:
       - "8080:80"
     volumes:
@@ -127,7 +127,7 @@ services:
     image: ghcr.io/lavanet/lava/lavap:${LAVAP_VERSION:-latest}
     networks:
       - lava_network
-      - internal-network
+      
     ports:
       - "3334:3334"
       - "3335:3335"
@@ -183,7 +183,7 @@ services:
       ]
     networks:
       - lava_network
-      - internal-network
+      
     depends_on:
       - lava-node
     restart: always
@@ -214,7 +214,7 @@ services:
       ]
     networks:
       - lava_network
-      - internal-network
+      
     depends_on:
       - lava-node
     restart: always
