@@ -51,7 +51,7 @@ services:
       ]
     # Expose the provider port directly since there's no nginx
     ports:
-      - "2220:2220"  # Use the same port of the provider
+      - "${PROVIDER_SUI_PORT:-2220}:${PROVIDER_SUI_PORT:-2220}"  # Use the same port of the provider
     restart: always
 
 volumes:
