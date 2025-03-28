@@ -1,26 +1,47 @@
 endpoints:
-  - api-interface: tendermintrpc
-    chain-id: LAV1
-    network-address:
-      address: "0.0.0.0:2220"
-    node-urls:
-      - url: ws://lava-node:26657/websocket
-      - url: http://lava-node:26657
-        # addons:
-        #   - archive
-  - api-interface: grpc
-    chain-id: LAV1
+  # - api-interface: tendermintrpc
+  #   chain-id: LAV1
+  #   network-address:
+  #     address: "0.0.0.0:2220"
+  #   node-urls:
+  #     - url: wss://lava-rpc.publicnode.com:443/websocket
+  #     - url: https://public-rpc.lavanet.xyz:443/rpc/
+  #       # addons:
+  #       #   - archive
+  # - api-interface: grpc
+  #   chain-id: LAV1
+  #   network-address:
+  #     address: "0.0.0.0:2220"
+  #   node-urls: 
+  #     - url: lava-grpc.publicnode.com:443
+  #       # addons:
+  #       #   - archive
+  # - api-interface: rest
+  #   chain-id: LAV1
+  #   network-address:
+  #     address: "0.0.0.0:2220"
+  #   node-urls: 
+  #     - url: https://lava-rest.publicnode.com
+  #       # addons:
+  #       #   - archive
+
+  # Ethereum Mainnet endpoint
+  # - api-interface: jsonrpc
+  #   chain-id: ETH1
+  #   network-address:
+  #     address: "0.0.0.0:2220"
+  #   node-urls: 
+  #     - url: https://eth.drpc.org
+  #     - url: wss://ethereum-rpc.publicnode.com
+  #   # Optional: disable TLS if you're using a proxy like nginx
+  #   # disable-tls: true
+
+  # SUI endpoint (commented out - uncomment when ready to use)
+  - api-interface: jsonrpc
+    chain-id: SUIJSONRPC
     network-address:
       address: "0.0.0.0:2220"
     node-urls: 
-      - url: lava-node:9090
-        # addons:
-        #   - archive
-  - api-interface: rest
-    chain-id: LAV1
-    network-address:
-      address: "0.0.0.0:2220"
-    node-urls: 
-      - url: http://lava-node:1317
-        # addons:
-        #   - archive
+      - url: https://sui-mainnet-endpoint.blockvision.org
+    # Optional: disable TLS if you're using a proxy like nginx
+    DisableTLS: true
