@@ -40,9 +40,12 @@ endpoints:
   - api-interface: jsonrpc
     chain-id: SUIJSONRPC
     network-address:
-      address: "0.0.0.0:443"
+      address: 0.0.0.0:2220 #important to match ports for provider
+      disable-tls: true
     node-urls: 
-      - url: https://1rpc.io/sui
-      #- url: https://sui-mainnet-endpoint.blockvision.org
+      #- url: http://full-node:9000
+      # - url: https://sui-mainnet-endpoint.blockvision.org
+      #- url: https://fullnode.mainnet.sui.io:443
+      - url : https://sui-mainnet.nodeinfra.com
     # Optional: disable TLS if you're using a proxy like nginx
-    DisableTLS: true
+    
