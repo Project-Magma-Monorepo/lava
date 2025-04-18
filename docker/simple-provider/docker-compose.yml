@@ -105,7 +105,6 @@ services:
       - ../common/lava.json:/lava/config/lava.json  # Mount sui.json to /lava/config/
       - ../common/ibc.json:/lava/config/ibc.json  # Mount sui.json to /lava/config/
       - ../common/tendermint.json:/lava/config/tendermint.json  # Mount sui.json to /lava/config/
-
       - ../../cookbook/plans/:/lava/cookbook/plans/
     networks:
       - lava_network
@@ -113,7 +112,6 @@ services:
       lava-node:
         condition: service_healthy
     restart: "no"
-    #Test to not make it run again
     deploy:
       restart_policy:
         condition: none
@@ -131,7 +129,7 @@ services:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
       - ./nginx/fullchain.pem:/etc/nginx/ssl/fullchain.pem:ro
       - ./nginx/privkey.pem:/etc/nginx/ssl/privkey.pem:ro
-            # Add these new volume mounts
+      # Add these new volume mounts
       - ./nginx/sites-available:/etc/nginx/sites-available:ro
       - ./nginx/sites-enabled:/etc/nginx/sites-enabled
     command: >
@@ -147,70 +145,6 @@ services:
       provider2:
         condition: service_started
     restart: always
-
-  # lava-provider-init:
-  #   image: ghcr.io/lavanet/lava/lavap:${LAVAP_VERSION:-latest}
-  #   container_name: lava-provider-init
-  #   # networks:
-  #   #   - lava_network   # Add this for consistency
-  #   volumes:
-  #     - lava_data:/lava
-  #   environment:
-  #     - PROVIDER_WALLET=${PROVIDER_WALLET:-servicer1}
-  #     - KEYRING_BACKEND=${KEYRING_BACKEND:-test}
-  #   entrypoint: ["lavap"]
-  #   command: 
-  #     - "keys"
-  #     - "add"
-  #     - "${PROVIDER_WALLET:-servicer1}"
-  #     - "--keyring-backend"
-  #     - "${KEYRING_BACKEND:-test}"
-  #   restart: "no"
-  
-  # lava-provider:
-  #   image: ghcr.io/lavanet/lava/lavap:${LAVAP_VERSION:-latest}
-  #   # depends_on:
-  #   #   lava-provider-init:
-  #   #     condition: service_completed_successfully
-  #   volumes:
-  #     - ../common/provider.yml:/lava/config/provider.yml:ro
-  #     - lava_data:/lava
-  #     - ../common/sui.json:/lava/specs/sui.json:ro
-  #   # environment:
-  #   #   - TZ=UTC
-  #   #   - PROVIDER_WALLET=${PROVIDER_WALLET:-servicer1}
-  #   #   - GEOLOCATION=${GEOLOCATION:-2}
-  #   #   - CHAIN_ID=${CHAIN_ID:-lava}
-  #   #   - KEYRING_BACKEND=${KEYRING_BACKEND:-test}
-  #   #   - LAVA_RPC_NODE=${LAVA_RPC_NODE:-tcp://lava-node:26657}
-  #   command:
-  #     [
-  #       "rpcprovider",
-  #       "provider.yml",
-  #       "--from",
-  #       "${PROVIDER_WALLET:-servicer1}",
-  #       "--chain-id",
-  #       "lava",
-  #       "--log_level",
-  #       "debug",
-  #       "--geolocation",
-  #       "${GEOLOCATION:-2}",
-  #       "--keyring-backend",
-  #       "${KEYRING_BACKEND:-test}",
-  #       "--node",
-  #       "tcp://lava-node:26657",
-  #       # "--use-static-spec",
-  #       # "sui.json"
-
-  #     ]
-  #   networks:
-  #     - lava_network
-  #   depends_on:
-  #     - lava-node
-  #   # Expose the provider port directly since there's no nginx
-  #   # ports:
-  #   #   - "${PROVIDER_SUI_PORT:-2220}:${PROVIDER_SUI_PORT:-2220}"  # Use the same port of the provider
-  #   restart: always
 
   provider1:
     image: ghcr.io/lavanet/lava/lavap:${LAVAP_VERSION:-latest}
@@ -281,7 +215,7 @@ services:
     restart: always
 
 
-  #Consumer for the lava rpc, call this when making rpc calls so the consumer can query the lava blockchain fro provider
+  #Consumer for the sui rpc, call this when making rpc calls so the consumer can query the lava blockchain from provider
   consumer:
     image: ghcr.io/lavanet/lava/lavap:${LAVAP_VERSION:-latest}
     networks:
@@ -318,12 +252,6 @@ services:
       post-lava-node-init:
         condition: service_completed_successfully
     restart: always
-
-
-    
-
-
-
 
 volumes:
   lava_data:
