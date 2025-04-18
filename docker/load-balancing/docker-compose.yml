@@ -99,6 +99,7 @@ services:
       - ../common/post_node_init.sh:/lava/config/post_node_init.sh
       - ../../specs/:/lava/specs/
       - ../../cookbook/plans/:/lava/cookbook/plans/
+      - ../common/sui.json:/lava/config/sui.json
     networks:
       - lava_network
       
@@ -120,7 +121,7 @@ services:
 
     depends_on:
       - provider1
-      - provider2
+      # - provider2
     restart: always
 
   consumer:
@@ -188,36 +189,36 @@ services:
       - lava-node
     restart: always
 
-  provider2:
-    image: ghcr.io/lavanet/lava/lavap:${LAVAP_VERSION:-latest}
-    volumes:
-      - ../common/provider.yml:/lava/config/provider.yml:ro
-      - lava_data:/lava
-    command:
-      [
-        "rpcprovider",
-        "provider.yml",
-        "--chain-id",
-        "lava",
-        "--from",
-        "servicer1",
-        "--log_level",
-        "debug",
-        "--geolocation",
-        "2",
-        "--keyring-backend",
-        "test",
-        "--shard-id",
-        "2",
-        "--node",
-        "tcp://lava-node:26657",
-      ]
-    networks:
-      - lava_network
+  # provider2:
+  #   image: ghcr.io/lavanet/lava/lavap:${LAVAP_VERSION:-latest}
+  #   volumes:
+  #     - ../common/provider.yml:/lava/config/provider.yml:ro
+  #     - lava_data:/lava
+  #   command:
+  #     [
+  #       "rpcprovider",
+  #       "provider.yml",
+  #       "--chain-id",
+  #       "lava",
+  #       "--from",
+  #       "servicer1",
+  #       "--log_level",
+  #       "debug",
+  #       "--geolocation",
+  #       "2",
+  #       "--keyring-backend",
+  #       "test",
+  #       "--shard-id",
+  #       "2",
+  #       "--node",
+  #       "tcp://lava-node:26657",
+  #     ]
+  #   networks:
+  #     - lava_network
       
-    depends_on:
-      - lava-node
-    restart: always
+  #   depends_on:
+  #     - lava-node
+  #   restart: always
 
 volumes:
   lava_data:
