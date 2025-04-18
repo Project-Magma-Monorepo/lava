@@ -3,6 +3,7 @@ endpoints:
     chain-id: LAV1
     network-address:
       address: "0.0.0.0:3334"
+      disable-tls: true
     node-urls:
       - url: ws://lava-node:26657/websocket
       - url: http://lava-node:26657
@@ -12,6 +13,7 @@ endpoints:
     chain-id: LAV1
     network-address:
       address: "0.0.0.0:3335"
+      disable-tls: true
     node-urls: 
       - url: lava-node:9090
         # addons:
@@ -20,6 +22,7 @@ endpoints:
     chain-id: LAV1
     network-address:
       address: "0.0.0.0:3336"
+      disable-tls: true
     node-urls: 
       - url: http://lava-node:1317
         # addons:
