@@ -10,6 +10,25 @@ check_votes_status() {
   lavad q gov proposals --output json | jq -r '.proposals[] | select(.status == "PROPOSAL_STATUS_VOTING_PERIOD")' 
 }
 
+# get_base_specs() {
+#     local priority_specs=(
+#         "specs/mainnet-1/specs/ibc.json"
+#         "specs/mainnet-1/specs/cosmoswasm.json"
+#         "specs/mainnet-1/specs/tendermint.json"
+#         "specs/mainnet-1/specs/cosmossdk.json"
+#         "specs/testnet-2/specs/cosmossdkv45.json"
+#         "specs/testnet-2/specs/cosmossdk_full.json"
+#         "specs/mainnet-1/specs/cosmossdkv50.json"
+#         "specs/mainnet-1/specs/ethermint.json"
+#         "specs/mainnet-1/specs/ethereum.json"
+#         "specs/mainnet-1/specs/solana.json"
+#         "specs/mainnet-1/specs/aptos.json"
+#         "specs/mainnet-1/specs/btc.json"
+#     )
+
+#     (IFS=,; echo "${priority_specs[*]}")
+# }
+
 vote_yes_on_all_pending_proposals() {
   echo "Waiting for at least one proposal to be active"
   while true; do
@@ -48,9 +67,18 @@ NODE="${NODE:-tcp://lava-node:26657}"
 lavad config node $NODE
 (
 cd /lava/specs/mainnet-1/specs/
-specs=$(get_base_specs)
-lavad tx gov submit-legacy-proposal spec-add $specs,./cosmoshub.json,./lava.json --lava-dev-test -y --from $FROM --gas-adjustment "1.5" --gas "auto" --gas-prices $GASPRICE
+# specs=$(get_base_specs)
+lavad tx gov submit-legacy-proposal spec-add ./ibc.json,./tendermint.json --lava-dev-test -y --from $FROM --gas-adjustment "1.5" --gas "auto" --gas-prices $GASPRICE
 )
+vote_yes_on_all_pending_proposals
+
+
+cd /lava/specs/mainnet-1/specs/
+lavad tx gov submit-legacy-proposal spec-add ./cosmossdk.json --lava-dev-test -y --from $FROM --gas-adjustment "1.5" --gas "auto" --gas-prices $GASPRICE
+vote_yes_on_all_pending_proposals
+
+cd /lava/specs/mainnet-1/specs/
+lavad tx gov submit-legacy-proposal spec-add ./lava.json,./sui.json --lava-dev-test -y --from $FROM --gas-adjustment "1.5" --gas "auto" --gas-prices $GASPRICE
 vote_yes_on_all_pending_proposals
 
 echo "Adding plan: DefaultPlan"
@@ -60,10 +88,23 @@ vote_yes_on_all_pending_proposals
 echo "Buying plan: DefaultPlan for $FROM"
 lavad tx subscription buy DefaultPlan $(lavad keys show $FROM -a) --enable-auto-renewal -y --from $FROM --gas-adjustment "1.5" --gas "auto" --gas-prices $GASPRICE 2> /dev/null
 
-sleep 1
+sleep 4
 echo "Staking provider"
 PROVIDERSTAKE="500000000000ulava"
-PROVIDER_ADDRESS="nginx:80"
-lavad tx pairing stake-provider LAV1 $PROVIDERSTAKE "$PROVIDER_ADDRESS,1" 1 $(operator_address) -y --delegate-commission 50  --from servicer1 --provider-moniker "servicer1" --gas-adjustment "1.5" --gas "auto" --gas-prices $GASPRICE
+
+# Stake SUI JSON-RPC provider on port 80
+echo "Staking SUI JSON-RPC provider"
+SUI_PROVIDER_ADDRESS="nginx:80"
+lavad tx pairing stake-provider SUIJSONRPC $PROVIDERSTAKE "$SUI_PROVIDER_ADDRESS,1" 1 $(operator_address) -y --delegate-commission 50 --from servicer1 --provider-moniker "servicer1-sui" --gas-adjustment "1.5" --gas "auto" --gas-prices $GASPRICE
+
+sleep 4
+# Stake LAV1 provider on port 81 (this will cover all LAV1 API interfaces)
+echo "Staking LAV1 provider"
+LAV_PROVIDER_ADDRESS="nginx:81"
+lavad tx pairing stake-provider LAV1 $PROVIDERSTAKE "$LAV_PROVIDER_ADDRESS,1" 1 $(operator_address) -y --delegate-commission 50 --from servicer2 --provider-moniker "servicer2-lav" --gas-adjustment "1.5" --gas "auto" --gas-prices $GASPRICE
+
 
 echo "### Post node init finished successfully ###"
+
+# Exit with success
+exit 0
