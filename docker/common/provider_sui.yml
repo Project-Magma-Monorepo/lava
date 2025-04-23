@@ -5,8 +5,8 @@ endpoints:
       address: 0.0.0.0:2220 #important to match ports for provider
       disable-tls: true
     node-urls: 
-      # - url: http://full-node:9000
-      - url : https://sui-mainnet.nodeinfra.com
+      - url: http://sui-node:9000
+      # - url : https://sui-mainnet.nodeinfra.com
     disable-tls: true
   # - api-interface: tendermintrpc
   #   chain-id: LAV1
