@@ -251,6 +251,6 @@ services:
 volumes:
   lava_data:
 
-networks:
-  lava_network:  # Define the network
+# networks:
+#   lava_network:  # Define the network
 
