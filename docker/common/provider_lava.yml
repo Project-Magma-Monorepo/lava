@@ -27,3 +27,13 @@ endpoints:
       - url: http://lava-node:1317
         # addons:
         #   - archive
+
+  - api-interface: jsonrpc
+    chain-id: SUIJSONRPC
+    network-address:
+      address: 0.0.0.0:2221 #important to match ports for provider
+      disable-tls: true
+    node-urls: 
+      # - url: http://sui-node:9000
+      - url : https://sui-mainnet.nodeinfra.com
+    disable-tls: true
