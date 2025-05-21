@@ -14,8 +14,8 @@ services:
     volumes:
       - lava_data:/lava
       - ../common/new_node_init.sh:/lava/config/new_node_init.sh
-    networks:
-      - lava_network
+    # networks:
+    # - lava_network
       
 
   lava-node-config:
@@ -57,8 +57,8 @@ services:
       "
     volumes:
       - lava_data:/lava
-    networks:
-      - lava_network
+    # networks:
+    # - lava_network
       
     depends_on:
       lava-node-init:
@@ -77,8 +77,8 @@ services:
       - "${LAVA_NODE_PORT_RPC:-26657}:26657"
     volumes:
       - lava_data:/lava
-    networks:
-      - lava_network
+    # networks:
+    # - lava_network
       
     healthcheck:
       test: ["CMD", "lavad", "status"]
@@ -106,8 +106,8 @@ services:
       - ../common/ibc.json:/lava/config/ibc.json  # Mount sui.json to /lava/config/
       - ../common/tendermint.json:/lava/config/tendermint.json  # Mount sui.json to /lava/config/
       - ../../cookbook/plans/:/lava/cookbook/plans/
-    networks:
-      - lava_network
+    # networks:
+    # - lava_network
     depends_on:
       lava-node:
         condition: service_healthy
@@ -119,8 +119,8 @@ services:
   #end mock lava node
   nginx:
     image: nginx:latest
-    networks:
-      - lava_network   # Uncomment this to enable networking
+    # networks:
+    # - lava_network   # Uncomment this to enable networking
     ports:
       - "443:443"      # For HTTPS
     volumes:
@@ -166,8 +166,8 @@ services:
         "tcp://lava-node:26657",
 
       ]
-    networks:
-      - lava_network
+    # networks:
+    # - lava_network
     depends_on:
       lava-node:
         condition: service_healthy
@@ -200,8 +200,8 @@ services:
         "tcp://lava-node:26657",
 
       ]
-    networks:
-      - lava_network
+    # networks:
+    # - lava_network
     depends_on:
       lava-node:
         condition: service_healthy
@@ -213,8 +213,8 @@ services:
   #Consumer for the sui rpc, call this when making rpc calls so the consumer can query the lava blockchain from provider
   consumer:
     image: ghcr.io/lavanet/lava/lavap:${LAVAP_VERSION:-latest}
-    networks:
-      - lava_network
+    # networks:
+    # - lava_network
     ports:
       - "3334:3334"
       - "3335:3335"
@@ -253,4 +253,6 @@ volumes:
 
 # networks:
 #   lava_network:  # Define the network
+
+
 
