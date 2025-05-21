@@ -7,30 +7,6 @@ endpoints:
     node-urls: 
       - url: http://sui-node:9000
       # - url : https://sui-mainnet.nodeinfra.com
+      # - url : https://fullnode.mainnet.sui.io:443
     disable-tls: true
-  # - api-interface: tendermintrpc
-  #   chain-id: LAV1
-  #   network-address:
-  #     address: "0.0.0.0:3334"
-  #   node-urls:
-  #     - url: ws://lava-node:26657/websocket
-  #     - url: http://lava-node:26657
-  #       # addons:
-  #       #   - archive
-  # - api-interface: grpc
-  #   chain-id: LAV1
-  #   network-address:
-  #     address: "0.0.0.0:3335"
-  #   node-urls: 
-  #     - url: lava-node:9090
-  #       # addons:
-  #       #   - archive
-  # - api-interface: rest
-  #   chain-id: LAV1
-  #   network-address:
-  #     address: "0.0.0.0:3336"
-  #   node-urls: 
-  #     - url: http://lava-node:1317
-  #       # addons:
-  #       #   - archive
 
